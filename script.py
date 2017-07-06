@@ -83,7 +83,7 @@ def download_yt_audio(video_id):
 
 # Define trigger words to actually play a song
 def said_trigger_words(value):
-    if value[0:6] == "I feel":
+    if "pepsi" in value.lower():
         return True
     return False
 
@@ -107,8 +107,25 @@ def play_song(speech_input):
         except (HttpError, e):
             print("An HTTP error %d occured:\n%s" % (e.resp.status, e.content))
 
-    pygame.mixer.init()
-    pygame.mixer.music.load(fetch_song(speech_input))
+    pygame.mixer.init(frequency=48000)
+    # pygame.mixer.music.load(fetch_song(speech_input))
+    if 'chill' in speech_input:
+        os.system("echo 'alright dude, lets chill out'")
+        os.system("say 'alright dude, lets chill out'")
+        pygame.mixer.music.load('8Ee4QjCEHHc.wav')
+    elif 'flavor' in speech_input:
+        os.system("echo 'alright dude, lets add some flavor to this party'")
+        os.system("say 'alright dude, lets add some flavor to this party'")        
+        pygame.mixer.music.load('Fi8rsCncwF8.wav')
+    elif 'spice' in speech_input:
+        os.system("echo 'alright dude, its about to get spicy'")
+        os.system("say 'alright dude, its about to get spicy'")        
+        pygame.mixer.music.load('If27FnxvjZA.wav')
+    elif 'turn up' in speech_input:
+        os.system("echo 'thats what im talking about'")
+        os.system("say 'thats what im talking about'")        
+        pygame.mixer.music.load('Qq-n0Hqg4Ik.wav')
+
     pygame.mixer.music.play()
 
 def main():
