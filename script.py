@@ -108,25 +108,33 @@ def play_song(speech_input):
             print("An HTTP error %d occured:\n%s" % (e.resp.status, e.content))
 
     pygame.mixer.init(frequency=48000)
-    # pygame.mixer.music.load(fetch_song(speech_input))
-    if 'chill' in speech_input:
-        os.system("echo 'alright dude, lets chill out'")
-        os.system("say 'alright dude, lets chill out'")
-        pygame.mixer.music.load('8Ee4QjCEHHc.wav')
-    elif 'flavor' in speech_input:
-        os.system("echo 'alright dude, lets add some flavor to this party'")
-        os.system("say 'alright dude, lets add some flavor to this party'")        
-        pygame.mixer.music.load('Fi8rsCncwF8.wav')
-    elif 'spice' in speech_input:
-        os.system("echo 'alright dude, its about to get spicy'")
-        os.system("say 'alright dude, its about to get spicy'")        
-        pygame.mixer.music.load('If27FnxvjZA.wav')
-    elif 'turn up' in speech_input:
-        os.system("echo 'thats what im talking about'")
-        os.system("say 'thats what im talking about'")        
-        pygame.mixer.music.load('Qq-n0Hqg4Ik.wav')
+    # Play smooth tone, then play despacito
+    if speech_input == "fail":
+        pygame.mixer.music.load('fail.wav')
+        pygame.mixer.music.play()
+    else:
+        pygame.mixer.music.load('drop-bieber.wav')
+        pygame.mixer.music.play()
 
-    pygame.mixer.music.play()
+    # pygame.mixer.music.load(fetch_song(speech_input))
+    # if 'chill' in speech_input:
+    #     os.system("echo 'alright dude, lets chill out'")
+    #     os.system("say 'alright dude, lets chill out'")
+    #     pygame.mixer.music.load('8Ee4QjCEHHc.wav')
+    # elif 'flavor' in speech_input:
+    #     os.system("echo 'alright dude, lets add some flavor to this party'")
+    #     os.system("say 'alright dude, lets add some flavor to this party'")        
+    #     pygame.mixer.music.load('Fi8rsCncwF8.wav')
+    # elif 'spice' in speech_input:
+    #     os.system("echo 'alright dude, its about to get spicy'")
+    #     os.system("say 'alright dude, its about to get spicy'")        
+    #     pygame.mixer.music.load('If27FnxvjZA.wav')
+    # elif 'turn up' in speech_input:
+    #     os.system("echo 'thats what im talking about'")
+    #     os.system("say 'thats what im talking about'")        
+    #     pygame.mixer.music.load('Qq-n0Hqg4Ik.wav')
+
+    # pygame.mixer.music.play()
 
 def main():
     # 1. Initialize speech recognition
@@ -136,32 +144,38 @@ def main():
         r = sr.Recognizer()
         m = sr.Microphone()
         print("A moment of silence for the mic to start...")
-        with m as source: r.adjust_for_ambient_noise(source)
-        print("Set minimum energy threshold to {}".format(r.energy_threshold))
-        while True:
-            print("Say something now!")
-            with m as source: audio = r.listen(source)
-            print ("Got it! Now recognizing what you said...")
-            try:
-                # recognize speech using Google Speech Recognition
-                value = r.recognize_google(audio)
+        with m as source:
+            while True:
+                # Run into problem where it's catching the audio playing
+                # So getting another mic command in is hard
+                r.adjust_for_ambient_noise(source)
+                print("Set minimum energy threshold to {}".format(r.energy_threshold))
+                print("Say something now!")
+                # with m as source: audio = r.listen(source)
+                audio = r.listen(source)
+                print ("Got it! Now recognizing what you said...")
+                try:
+                    # recognize speech using Google Speech Recognition
+                    value = r.recognize_google(audio)
 
-                # we need some special handling here to correclty print unicode characters to standard output
-                if str is bytes: # Python2 uses bytes for strings
-                    print(u"You said: {}".format(value).encode("utf-8"))
-                else: # Python3+ uses unicode for strings
-                    print("You said {}".format(value))
+                    # we need some special handling here to correclty print unicode characters to standard output
+                    if str is bytes: # Python2 uses bytes for strings
+                        print(u"You said: {}".format(value).encode("utf-8"))
+                    else: # Python3+ uses unicode for strings
+                        print("You said {}".format(value))
 
-                # 2. Use speech result as input to play a song
-                # Only if certain words are recognized
-                if said_trigger_words(value):
-                    play_song(value)
+                    # 2. Use speech result as input to play a song
+                    # Only if certain words are recognized
+                    if said_trigger_words(value):
+                        play_song(value)
+                    # else:
+                    #     play_song("fail")
 
 
-            except sr.UnknownValueError:
-                print("Oops! Didn't recognize what you just said")
-            except sr.RequestError as e:
-                print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
+                except sr.UnknownValueError:
+                    print("Oops! Didn't recognize what you just said")
+                except sr.RequestError as e:
+                    print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
     except KeyboardInterrupt:
         pass
     
